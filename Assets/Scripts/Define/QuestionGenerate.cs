@@ -30,20 +30,45 @@ public class QuestionGenerate : ScriptableObject
     /// </summary>
     public struct StageData
     {
-        public readonly string question;
-        public readonly string a;
-        public readonly string b;
-        public readonly string c;
-        public readonly string d;
-        public readonly string answer;
-        public StageData(string _question, string _a, string _b, string _c, string _d, string _answer)
+        //15
+        public readonly string HorseName;
+        public readonly string sire;//父
+        public readonly string secondsire;//父父
+        public readonly string siredam;//父母
+        public readonly string thirdsire;//父父父
+        public readonly string secondsiredam;//父父母
+        public readonly string siredamsire;//父母父
+        public readonly string siredamdam;//父母母
+
+        public readonly string dam;//母
+        public readonly string broodMareSire;//母父
+        public readonly string seconddam;//母母
+        public readonly string damsiresire;//母父父
+        public readonly string damsiredam;//母父母
+        public readonly string seconddamsire;//母母父
+        public readonly string thirddam;//母母母
+
+        public StageData(string _HorseName, string _sire, string _secondsire, string _siredam, string _thirdsire,
+            string _secondsiredam, string _siredamsire, string _siredamdam, string _dam, string _broodMareSire,
+            string _seconddam, string _damsiresire, string _damsiredam, string _seconddamsire, string _thirddam)
         {
-            question = _question;
-            a = _a;
-            b = _b;
-            c = _c;
-            d = _d;
-            answer = _answer;
+            HorseName = _HorseName;
+            sire = _sire;//父
+            dam = _dam; //母
+            secondsire = _secondsire;//父父
+            siredam = _siredam;//父母
+            broodMareSire = _broodMareSire;
+            seconddam = _seconddam;
+
+            thirdsire = _thirdsire;//父父父
+            secondsiredam = _secondsiredam;//父父母
+            siredamsire = _siredamsire;
+            siredamdam = _siredamdam;
+            damsiresire = _damsiresire;
+            damsiredam = _damsiredam;
+            seconddamsire = _seconddamsire;
+            thirddam = _thirddam;
+
         }
 
     }
@@ -63,7 +88,7 @@ public class QuestionGenerate : ScriptableObject
         {
             var line = sr.ReadLine();
             var cols = line.Split(',');
-            if (cols.Length != 6) continue; //6項目なければwhile脱出
+            if (cols.Length != 15) continue; //6項目なければwhile脱出
 
             stagecsvdata.Add(
                 new StageData(
@@ -72,7 +97,16 @@ public class QuestionGenerate : ScriptableObject
                     cols[2],
                     cols[3],
                     cols[4],
-                    cols[5]
+                    cols[5],
+                    cols[6],
+                    cols[7],
+                    cols[8],
+                    cols[9],
+                    cols[10],
+                    cols[11],
+                    cols[12],
+                    cols[13],
+                    cols[14]
                     )
                 );
 

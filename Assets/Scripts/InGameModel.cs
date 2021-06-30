@@ -18,8 +18,9 @@ public class InGameModel : MonoBehaviour
     //private readonly Subject<(string,string,string,string)> choices = new Subject<(string, string, string, string)>();
     //public IObservable<(string, string, string, string)> IOchoices => choices;
 
-    private readonly Subject<(string, string, string, string,string,string)> choices = new Subject<(string, string, string, string,string,string)>();
-    public IObservable<(string, string, string, string,string,string)> IOchoices => choices;
+    //血統全部とランダムに描画した答え
+    private readonly Subject<(string, string, string, string,string,string, string, string, string, string, string, string, string, string, string,string, string, string, string)> choices = new Subject<(string, string, string, string, string,string, string, string, string, string, string, string, string, string, string, string, string, string, string)>();
+    public IObservable<(string, string, string, string, string, string, string, string, string, string, string, string, string, string, string,string, string, string, string)> IOchoices => choices;
 
     //答え
     private readonly Subject<string> answer = new Subject<string>();
@@ -28,6 +29,10 @@ public class InGameModel : MonoBehaviour
     //お題
     private readonly Subject<string> question = new Subject<string>();
     public IObservable<string> IOquiz => question;
+
+    //resultViewの呼び出し
+    private readonly Subject<Unit> setResult = new Subject<Unit>();
+    public IObservable<Unit> IOsetResult => setResult;
 
     private static InGameModel instance;
     public static InGameModel Instance { get => instance; }
@@ -59,7 +64,7 @@ public class InGameModel : MonoBehaviour
         {
             var line = sr.ReadLine();
             var cols = line.Split(',');
-            if (cols.Length != 6) continue; //5項目なければwhile脱出
+            if (cols.Length != 15) continue; //6項目なければwhile脱出
 
             stagecsvdata.Add(
                 new QuestionGenerate.StageData(
@@ -68,7 +73,16 @@ public class InGameModel : MonoBehaviour
                     cols[2],
                     cols[3],
                     cols[4],
-                    cols[5]
+                    cols[5],
+                    cols[6],
+                    cols[7],
+                    cols[8],
+                    cols[9],
+                    cols[10],
+                    cols[11],
+                    cols[12],
+                    cols[13],
+                    cols[14]
                     )
                 );
 
@@ -84,14 +98,43 @@ public class InGameModel : MonoBehaviour
 
     public void Step()
     {
-       if (stagedataidx >= stageDatas.Length) { return; }
-        //{
-            //  stageDatas[stagedataidx].question
-            string[] arrayChices = new string[] { stageDatas[stagedataidx].a, stageDatas[stagedataidx].b, stageDatas[stagedataidx].c, stageDatas[stagedataidx].d };
-            arrayChices = arrayChices.OrderBy(x => System.Guid.NewGuid()).ToArray(); // 回答候補のリストをシャッフル
-            choices.OnNext((stageDatas[stagedataidx].question,arrayChices[0], arrayChices[1], arrayChices[2], arrayChices[3], stageDatas[stagedataidx].answer));
-            Debug.Log(stagedataidx);
-           
+       if (stagedataidx >= stageDatas.Length) {
+            setResult.OnNext(Unit.Default);
+            //result画面の描画
+            return;
+        }
+                        
+        //答え
+        string[] arrayChoices = new string[]
+                        { stageDatas[stagedataidx].HorseName, stageDatas[stagedataidx].sire, stageDatas[stagedataidx].secondsire,
+                        stageDatas[stagedataidx].siredam, stageDatas[stagedataidx].thirdsire, stageDatas[stagedataidx].secondsiredam,
+                        stageDatas[stagedataidx].siredamsire, stageDatas[stagedataidx].siredamdam, stageDatas[stagedataidx].dam,
+                        stageDatas[stagedataidx].broodMareSire, stageDatas[stagedataidx].seconddam, stageDatas[stagedataidx].damsiresire,
+                        stageDatas[stagedataidx].damsiredam, stageDatas[stagedataidx].seconddamsire, stageDatas[stagedataidx].thirddam
+                        };
+        arrayChoices = arrayChoices.OrderBy(x => System.Guid.NewGuid()).ToArray(); // 回答候補のリストをシャッフル
+
+        //その他の選択肢のランダムか
+        string[] arrayMissChoices = new string[]
+                        { stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].sire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].secondsire,
+                        stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].siredam, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].thirdsire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].secondsiredam,
+                        stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].siredamsire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].siredamdam, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].dam,
+                        stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].broodMareSire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].seconddam, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].damsiresire,
+                        stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].damsiredam, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].seconddamsire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].thirddam
+                        };
+        arrayMissChoices = arrayMissChoices.OrderBy(x => System.Guid.NewGuid()).ToArray(); // 回答候補のリストをシャッフル
+
+
+
+        //血統表の描画
+        choices.OnNext((stageDatas[stagedataidx].HorseName, stageDatas[stagedataidx].sire, stageDatas[stagedataidx].secondsire,
+                        stageDatas[stagedataidx].siredam, stageDatas[stagedataidx].thirdsire, stageDatas[stagedataidx].secondsiredam,
+                        stageDatas[stagedataidx].siredamsire, stageDatas[stagedataidx].siredamdam, stageDatas[stagedataidx].dam,
+                        stageDatas[stagedataidx].broodMareSire, stageDatas[stagedataidx].seconddam, stageDatas[stagedataidx].damsiresire,
+                        stageDatas[stagedataidx].damsiredam, stageDatas[stagedataidx].seconddamsire, stageDatas[stagedataidx].thirddam,
+                        arrayChoices[0], arrayChoices[1], arrayMissChoices[2], arrayMissChoices[3]
+                        ));
+
         //}
         ++stagedataidx;
     }
