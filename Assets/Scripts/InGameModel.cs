@@ -13,7 +13,7 @@ public class InGameModel : MonoBehaviour
     [SerializeField] private QuestionGenerate questionGenerate;
     //[SerializeField] private string filename = "";
     private int stagedataidx = 0;
-
+    private const int MaxCount = 10;
     //選択肢
     //private readonly Subject<(string,string,string,string)> choices = new Subject<(string, string, string, string)>();
     //public IObservable<(string, string, string, string)> IOchoices => choices;
@@ -98,7 +98,9 @@ public class InGameModel : MonoBehaviour
 
     public void Step()
     {
-       if (stagedataidx >= stageDatas.Length) {
+        //todo:MaxCount10にする
+        //後にユーザーが出題数をいじれるようにする
+       if (stagedataidx >= stageDatas.Length|| stagedataidx >= QuestionCount.CurrentMaxCount) {
             setResult.OnNext(Unit.Default);
             //result画面の描画
             return;
@@ -106,7 +108,7 @@ public class InGameModel : MonoBehaviour
                         
         //答え
         string[] arrayChoices = new string[]
-                        { stageDatas[stagedataidx].HorseName, stageDatas[stagedataidx].sire, stageDatas[stagedataidx].secondsire,
+                        { stageDatas[stagedataidx].sire, stageDatas[stagedataidx].secondsire,
                         stageDatas[stagedataidx].siredam, stageDatas[stagedataidx].thirdsire, stageDatas[stagedataidx].secondsiredam,
                         stageDatas[stagedataidx].siredamsire, stageDatas[stagedataidx].siredamdam, stageDatas[stagedataidx].dam,
                         stageDatas[stagedataidx].broodMareSire, stageDatas[stagedataidx].seconddam, stageDatas[stagedataidx].damsiresire,
@@ -116,10 +118,10 @@ public class InGameModel : MonoBehaviour
 
         //その他の選択肢のランダムか
         string[] arrayMissChoices = new string[]
-                        { stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].sire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].secondsire,
+                        {  stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].secondsire,
                         stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].siredam, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].thirdsire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].secondsiredam,
                         stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].siredamsire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].siredamdam, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].dam,
-                        stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].broodMareSire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].seconddam, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].damsiresire,
+                         stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].seconddam, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].damsiresire,
                         stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].damsiredam, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].seconddamsire, stageDatas[UnityEngine.Random.Range(0,stageDatas.Length)].thirddam
                         };
         arrayMissChoices = arrayMissChoices.OrderBy(x => System.Guid.NewGuid()).ToArray(); // 回答候補のリストをシャッフル
@@ -132,7 +134,7 @@ public class InGameModel : MonoBehaviour
                         stageDatas[stagedataidx].siredamsire, stageDatas[stagedataidx].siredamdam, stageDatas[stagedataidx].dam,
                         stageDatas[stagedataidx].broodMareSire, stageDatas[stagedataidx].seconddam, stageDatas[stagedataidx].damsiresire,
                         stageDatas[stagedataidx].damsiredam, stageDatas[stagedataidx].seconddamsire, stageDatas[stagedataidx].thirddam,
-                        arrayChoices[0], arrayChoices[1], arrayMissChoices[2], arrayMissChoices[3]
+                        arrayChoices[0], arrayMissChoices[1], arrayMissChoices[2], arrayMissChoices[3]
                         ));
 
         //}

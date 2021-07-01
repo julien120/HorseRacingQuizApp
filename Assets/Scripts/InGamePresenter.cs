@@ -16,6 +16,7 @@ public class InGamePresenter : MonoBehaviour
                                                                     item.Item15, item.Item16, item.Item17, item.Item18, item.Item19));
         inGameModel.IOsetResult.Subscribe(_ => inGameView.SetResult());
         inGameView.IOnextQuiz.Subscribe(_ => inGameModel.Step());
+        inGameView.IOsetrestart.Subscribe(_ => RestartModel());
         inGameModel.Load();
         inGameModel.Reset();
         inGameModel.Step();
@@ -25,5 +26,11 @@ public class InGamePresenter : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void RestartModel()
+    {
+        inGameModel.Load();
+        inGameModel.Reset();
     }
 }
