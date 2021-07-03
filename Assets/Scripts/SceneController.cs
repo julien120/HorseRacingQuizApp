@@ -37,9 +37,13 @@ public class SceneController : MonoBehaviour
 
     public void LoadSelectButton(int count)
     {
+        CommonValues.PlayerPrefsKeyCode = "INGAME" + count + "_" + QuestionCount.CurrentMaxCount;
+        Debug.Log(CommonValues.PlayerPrefsKeyCode);
         switch (count)
         {
+            
             case 1:
+                
                 LoadInGameScene();
                 break;
 

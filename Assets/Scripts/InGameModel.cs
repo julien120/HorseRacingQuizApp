@@ -10,7 +10,6 @@ public class InGameModel : MonoBehaviour
 {
     private QuestionGenerate.StageData[] stageDatas;
 
-    [SerializeField] private QuestionGenerate questionGenerate;
     //[SerializeField] private string filename = "";
     private int stagedataidx = 0;
     private const int MaxCount = 10;
@@ -57,7 +56,7 @@ public class InGameModel : MonoBehaviour
     public void Load()
     {
         var stagecsvdata = new List<QuestionGenerate.StageData>();
-        var csvdata = Resources.Load<TextAsset>(questionGenerate.filename).text;
+        var csvdata = Resources.Load<TextAsset>(CommonValues.FileName).text;
         //文字列読み込み1行,区切りずつに
         StringReader sr = new StringReader(csvdata);
         while (sr.Peek() != -1)
@@ -126,6 +125,36 @@ public class InGameModel : MonoBehaviour
                         };
         arrayMissChoices = arrayMissChoices.OrderBy(x => System.Guid.NewGuid()).ToArray(); // 回答候補のリストをシャッフル
 
+        //arrayChoicesとarrayMissChoicesの重複した選択肢になった場合、削除
+        List<string> questionList = new List<string>();
+        questionList.Add(arrayChoices[0]);
+        questionList.Add(arrayMissChoices[1]);
+        questionList.Add(arrayMissChoices[2]);
+        questionList.Add(arrayMissChoices[3]);
+
+        IEnumerable<string> duplicateAnswers = questionList.Distinct();
+
+        for(var i = 0; i < 3; i++) { 
+            if (Equals(arrayChoices[0], arrayMissChoices[i]))
+            {
+                questionList.Remove(arrayMissChoices[i]);
+                //questionList.Add()
+            }
+        }
+
+        //重複を避ける方法2
+        var noDuplicatelist = new List<string>();
+
+        var numbers = new string[] {
+            arrayChoices[0], arrayMissChoices[1], arrayMissChoices[2], arrayMissChoices[3],arrayMissChoices[4],arrayMissChoices[5]};
+        foreach (var num in numbers)
+        {
+            // リストに要素が無ければ追加
+            if (!noDuplicatelist.Contains(num))
+            {
+                noDuplicatelist.Add(num);
+            }
+        }
 
 
         //血統表の描画
@@ -134,10 +163,9 @@ public class InGameModel : MonoBehaviour
                         stageDatas[stagedataidx].siredamsire, stageDatas[stagedataidx].siredamdam, stageDatas[stagedataidx].dam,
                         stageDatas[stagedataidx].broodMareSire, stageDatas[stagedataidx].seconddam, stageDatas[stagedataidx].damsiresire,
                         stageDatas[stagedataidx].damsiredam, stageDatas[stagedataidx].seconddamsire, stageDatas[stagedataidx].thirddam,
-                        arrayChoices[0], arrayMissChoices[1], arrayMissChoices[2], arrayMissChoices[3]
-                        ));
+                        noDuplicatelist[0], noDuplicatelist[1], noDuplicatelist[2], noDuplicatelist[3]
+                      ));
 
-        //}
         ++stagedataidx;
     }
 

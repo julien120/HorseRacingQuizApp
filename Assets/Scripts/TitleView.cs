@@ -17,8 +17,9 @@ public class TitleView : MonoBehaviour
     private async UniTaskVoid LoadHomeScene()
     {
         await image.DOScale(0f, 0.01f).SetEase(Ease.Linear).AsyncWaitForCompletion();
-        await DOVirtual.DelayedCall(1.9f, () => image.DOScale(5f, 0.7f).SetEase(Ease.InOutBounce)).AsyncWaitForCompletion();
-        await DOVirtual.DelayedCall(1f, () => SceneController.Instance.LoadHomeScene()).AsyncWaitForCompletion();
+        await DOVirtual.DelayedCall(1.4f, () => image.DOScale(7f, 0.4f).SetEase(Ease.Linear)).AsyncWaitForCompletion();
+      //  await 
+        await DOVirtual.DelayedCall(0.5f, () => SceneController.Instance.LoadHomeScene()).AsyncWaitForCompletion();
 
     }
 

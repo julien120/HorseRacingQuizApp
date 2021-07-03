@@ -19,6 +19,7 @@ public class HomeView : MonoBehaviour
     //InGameStartButton
     [SerializeField] private Button startButton;
 
+    //todo:今後、お題を増やす場合はここも
     private List<string> list = new List<string>()
     { QuestionTitle.InGame1,QuestionTitle.InGame2,QuestionTitle.InGame3,
       QuestionTitle.InGame4,QuestionTitle.InGame5
@@ -85,9 +86,9 @@ public class HomeView : MonoBehaviour
             //todo prefsKeyの参照をそれぞれにする,スマートではないが"INGAME"+hoge+"_10"
             questionElemnt[number].ScoreText.text = PlayerPrefs.GetInt("INGAME" + hoge + "_10").ToString();
             questionElemnt[number].NameText.text = x;
-
+            
             //todo ファイル読み込み名をそれぞれにする,スマートではないが"quiz"+hoge
-            questionElemnt[number].GetComponent<Button>().onClick.AddListener( ()=> SetSelectView(number,"quiz" + number));
+            questionElemnt[number].GetComponent<Button>().onClick.AddListener( ()=> SetSelectView(hoge,"quiz" + hoge));
             number++;
         });
     }
@@ -95,9 +96,13 @@ public class HomeView : MonoBehaviour
     /// <summary>
     /// ユーザーが設問をクリックしたら,
     /// 主題競争馬の描画がお題に関連した内容に変わるようにする
+    /// todo:Commonはここで処理する
     /// </summary>
     private void SetSelectView(int count,string filename)
     {
+        CommonValues.PlayerPrefsKeyCode = "INGAME" + count + "_" + QuestionCount.CurrentMaxCount;
+        CommonValues.FileName = filename;
+        CommonValues.InGameTitleText = hoge(count);
         //スタートボタンにアタッチされる内容を変更する
         startButton.onClick.AddListener(() => DOVirtual.DelayedCall(0.2f, () => SceneController.Instance.LoadSelectButton(count)));
         
@@ -106,6 +111,18 @@ public class HomeView : MonoBehaviour
         Load(filename);
         Step();
     }
+
+    string hoge(int count)
+    {
+        if (count == 1) { return QuestionTitle.InGame1; }
+        if (count == 2) { return QuestionTitle.InGame2; }
+        if (count == 3) { return QuestionTitle.InGame3; }
+        if (count == 4) { return QuestionTitle.InGame4; }
+        if (count == 5) { return QuestionTitle.InGame5; }
+
+        return QuestionTitle.InGame1;
+    }
+
 
 
     //
@@ -243,6 +260,7 @@ public class HomeView : MonoBehaviour
         questionCountButton[0].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
         questionCountButton[1].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
         questionCountButton[2].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
+
 
         QuestionCount.CurrentMaxCount = QuestionCount.Count50;
         for (var i = 0; i < questionElemnt.Length; i++)

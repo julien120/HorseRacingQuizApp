@@ -12,7 +12,7 @@ using System.Linq;
 
 public class InGameView : MonoBehaviour
 {
-    [SerializeField] private string PlayerPrefsKeyCode = "";
+    [SerializeField] private Text quizTitle;
     [SerializeField] private Text racingName;
     [SerializeField] private Text[] screenQuestion;
     [SerializeField] private Text[] answers;
@@ -48,8 +48,9 @@ public class InGameView : MonoBehaviour
     [SerializeField] private RectTransform resultPanel;
     private int answerCount = 0;
     [SerializeField] private Text resultTitle;
-    [SerializeField] private int correctAnswerCount;
+    [SerializeField] private int correctAnswerCount =0;
     [SerializeField] private Button restartButton;
+    [SerializeField] private Button ToHomeButton;
     private int answerIcon = 0;
     private bool iconFlag = true;
     private bool isFlag = true;
@@ -57,18 +58,20 @@ public class InGameView : MonoBehaviour
     //消した箇所のテキスト
     private int bloodlineCount;
 
+    //BGM・SE関連
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip correctAnswerAudio;
+    [SerializeField] private AudioClip wrongAnswerAudio;
+    [SerializeField] private AudioClip QuestionAudio;
+
 
 
 
     void Start()
     {
-        correctAnswerCount -= 1;
-        answerIcon -= 1;
-        restartButton.onClick.AddListener(RestartGame);
-        loserImage.DOScale(0f, 0.1f).SetEase(Ease.Linear);
-        winnerImage.DOScale(0f, 0.1f).SetEase(Ease.Linear);
-        ResetText().Forget();
-        popPanel.DOAnchorPos(Vector2.zero, 0.4f);
+        StartSetting();
+
+
         this.UpdateAsObservable()
         .Subscribe(_ => {
             InGameState(currentState);
@@ -76,22 +79,47 @@ public class InGameView : MonoBehaviour
         });
     }
 
+    private void StartSetting()
+    {
+        quizTitle.text = CommonValues.InGameTitleText;
+        correctAnswerCount -= 1;
+        answerIcon -= 1;
+        restartButton.onClick.AddListener(RestartGame);
+        ToHomeButton.onClick.AddListener(ToHomeFromInGame);
+        loserImage.DOScale(0f, 0.1f).SetEase(Ease.Linear);
+        winnerImage.DOScale(0f, 0.1f).SetEase(Ease.Linear);
+        ResetText().Forget();
+        popPanel.DOAnchorPos(Vector2.zero, 0.4f);
+    }
+
+
     public void InGameState(State state)
     {
         switch (state)
         {
             case State.InGame:
                 //ButtonEnabled();
-                iconFlag = true;
+               
+                hoge = true;
+                isFlag_i = true;
                 timebar.fillAmount -= 1.0f / countTime * Time.deltaTime;
-                if(timebar.fillAmount <= 0) { }
+                if(timebar.fillAmount <= 0)
+                {
+                    //todo
+                    currentState = State.InGameTimeOver;
+                }
                 break;
+
             case State.InGameResult:
                 
                 break;
 
             case State.InGameTimeOver:
-                InGameResult().Forget();
+                iconFlag = true;
+                isFlags = true;
+                InGameResult();
+
+                //currentState = State.Resset;
                 break;
 
             case State.Resulet:
@@ -99,14 +127,24 @@ public class InGameView : MonoBehaviour
                 break;
 
             case State.Resset:
-                
+                ResetText().Forget();//todo:時間切れでこの処理を呼び出したときは1フレームに何度も呼ばれるかdowteen途中できれる
                 isFlag = true;
-                ResetText().Forget();
-                Observable.IntervalFrame(30)
-                .Do(_ => nextQuiz.OnNext(Unit.Default))
-                .First()
-                .Subscribe();
                 
+                if (isFlag_i)
+                {
+                    isFlag_i = false;
+                    if (hoge) {
+                    nextQuiz.OnNext(Unit.Default);
+                        hoge = false;
+                    }
+
+                }
+                //Observable.IntervalFrame(230)
+                //.Do(_ => nextQuiz.OnNext(Unit.Default))
+                //.First()
+                //.Subscribe();
+               // Debug.Log("呼び出されたよ");
+
                 currentState = State.InGame;
                 break;
 
@@ -114,38 +152,37 @@ public class InGameView : MonoBehaviour
                 break;
         }
     }
-
-
-
-    void hoge()
+    private bool hoge = true;
+    private bool isFlag_i = true;
+    private bool isFlags =true;
+    private void InGameResult()
     {
-        ResetText().Forget();
-        Observable.IntervalFrame(3)
-        .Do(_ => nextQuiz.OnNext(Unit.Default))
-        .First()
-        .Subscribe();
 
-        currentState = State.InGame;
-    }
-
-    private async UniTaskVoid InGameResult()
-    {
-        timebar.fillAmount = 1.0f;
         for (var i = 0; i < 4; i++)
         {
             answerButtons[i].enabled = false;
             if (Equals(arrayChoices[i], currentAnswer))
             {
+                audioSource.PlayOneShot(correctAnswerAudio);
                 answers[i].color = Color.green;
             }
             if (!Equals(arrayChoices[i], currentAnswer))
             {
+                audioSource.PlayOneShot(wrongAnswerAudio);
                 answers[i].color = Color.red;
             }
         }
-        await loserImage.DOScale(1f, 0.3f).SetEase(Ease.OutBounce).AsyncWaitForCompletion();
-        //DOVirtual.DelayedCall(0.9f, () => ResetText());
-        DOVirtual.DelayedCall(1f, () => currentState = State.Resset);
+        loserImage.DOScale(1f, 0.3f).SetEase(Ease.OutBounce)
+            .OnComplete(() =>
+            {
+                //isFlag = true;
+                // ResetText().Forget();
+                //nextQuiz.OnNext(Unit.Default);
+                if (isFlags) {
+                    currentState = State.Resset;
+                    isFlags = false;
+                }
+            });
 
     }
 
@@ -165,7 +202,7 @@ public class InGameView : MonoBehaviour
         string g, string h, string i, string j, string k, string l, string m, string n, string answer,
         string mistake1, string mistake2,string mistake3)
     {
-        
+        audioSource.PlayOneShot(QuestionAudio);
         ResetText().Forget();
         //血統表の描画
         racingName.text = name;
@@ -209,7 +246,7 @@ public class InGameView : MonoBehaviour
         answerButtons[1].onClick.AddListener(() => ButtonChoices(1, arrayChoices[1], currentAnswer));
         answerButtons[2].onClick.AddListener(() => ButtonChoices(2, arrayChoices[2], currentAnswer));
         answerButtons[3].onClick.AddListener(() => ButtonChoices(3, arrayChoices[3], currentAnswer));
-        
+
         correctAnswers[answerCount] = answer;
         correctAnsewersText[answerCount].text = correctAnswers[answerCount];
         answerCount++;
@@ -218,13 +255,15 @@ public class InGameView : MonoBehaviour
 
     public void ButtonChoices(int count,string choice,string answer)
     {
+        audioSource.PlayOneShot(correctAnswerAudio);
+        iconFlag = true;
+        isFlags = true;
         answerButtons[count].enabled = false;
         currentState = State.InGameResult;
         screenQuestion[bloodlineCount].text = answer;
         screenQuestion[bloodlineCount].color = Color.green;
         if (iconFlag)
         {
-            iconFlag = false;
             answerIcon += 1;
             iconFlag = false;
         }
@@ -234,23 +273,24 @@ public class InGameView : MonoBehaviour
             {
                 correctAnswerCount += 1;
                 
-                if (correctAnswerCount > PlayerPrefs.GetInt(PlayerPrefsKeyCode+QuestionCount.CurrentMaxCount))
+                if (correctAnswerCount > PlayerPrefs.GetInt(CommonValues.PlayerPrefsKeyCode))
                 {
-                     PlayerPrefs.SetInt(PlayerPrefsKeyCode + QuestionCount.CurrentMaxCount, correctAnswerCount);
+                     PlayerPrefs.SetInt(CommonValues.PlayerPrefsKeyCode, correctAnswerCount);
                 }
                 isFlag = false;
             }
             answers[count].color = Color.green;
             //answerButtons[count].image.color = Color.green;
-            answersPopIcon[answerIcon].sprite = correctIcon;
-            resultTitle.text = "10問中" + correctAnswerCount + "問正解！";
+//            answersPopIcon[answerIcon].sprite = correctIcon;
+            resultTitle.text = QuestionCount.CurrentMaxCount+"問中" + correctAnswerCount + "問正解！";
             winnerImage.DOScale(1f, 0.3f).SetEase(Ease.OutBounce);
-            Debug.Log(choice + "と"+answer);
+            //Debug.Log(choice + "と"+answer);
         }
         else if (!Equals(choice, answer))
         {
-            resultTitle.text = "10問中" + correctAnswerCount + "問正解！";
-            answersPopIcon[answerIcon].sprite = mistakeIcon;
+            audioSource.PlayOneShot(wrongAnswerAudio);
+            resultTitle.text = QuestionCount.CurrentMaxCount+"問中" + correctAnswerCount + "問正解！";
+//            answersPopIcon[answerIcon].sprite = mistakeIcon;
             answers[count].color = Color.red;
             for(var i = 0; i < 3; i++)
             {
@@ -282,8 +322,10 @@ public class InGameView : MonoBehaviour
             timebar.fillAmount = 1.0f;
 
 
-        await loserImage.DOScale(0f, 0.001f).SetEase(Ease.Linear).AsyncWaitForCompletion();
+        loserImage.DOScale(0f, 0.01f).SetEase(Ease.Linear);
+        loserImage.DOComplete();
         await winnerImage.DOScale(0f, 0.001f).SetEase(Ease.Linear).AsyncWaitForCompletion();
+        winnerImage.DOComplete();
        
         
        //todo answerCount++;
@@ -300,7 +342,7 @@ public class InGameView : MonoBehaviour
     /// <summary>
     /// todo:動画広告を流してからシーン変遷
     /// </summary>
-    public void RestartGame()
+    private void RestartGame()
     {
         answerIcon = 0;
         isFlag = true;
@@ -315,6 +357,12 @@ public class InGameView : MonoBehaviour
         });
         
     }
+
+    private void ToHomeFromInGame()
+    {
+        SceneController.Instance.LoadHomeScene();
+    }
+
 
   
 
