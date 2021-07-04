@@ -63,6 +63,7 @@ public class InGameView : MonoBehaviour
     [SerializeField] private AudioClip correctAnswerAudio;
     [SerializeField] private AudioClip wrongAnswerAudio;
     [SerializeField] private AudioClip QuestionAudio;
+    [SerializeField] private AudioClip otherButton;
 
 
 
@@ -122,8 +123,8 @@ public class InGameView : MonoBehaviour
                 //currentState = State.Resset;
                 break;
 
-            case State.Resulet:
-                
+            case State.Result:
+                timebar.fillAmount = 1.0f;
                 break;
 
             case State.Resset:
@@ -334,7 +335,8 @@ public class InGameView : MonoBehaviour
 
     public void SetResult()
     {
-        currentState = State.Resulet;
+        DOVirtual.DelayedCall(0.2f, () => currentState = State.Result);
+        //currentState = State.Result;
         resultPanel.DOAnchorPos(Vector2.zero, 0.3f);
 
     }
@@ -360,7 +362,8 @@ public class InGameView : MonoBehaviour
 
     private void ToHomeFromInGame()
     {
-        SceneController.Instance.LoadHomeScene();
+        audioSource.PlayOneShot(otherButton);
+        DOVirtual.DelayedCall(0.5f, () => SceneController.Instance.LoadHomeScene());
     }
 
 

@@ -5,6 +5,6 @@ public enum State
         InGame,
         InGameResult,
         InGameTimeOver,
-        Resulet,
+        Result,
         Resset,
 }

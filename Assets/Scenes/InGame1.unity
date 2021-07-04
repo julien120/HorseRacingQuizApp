@@ -7143,6 +7143,7 @@ MonoBehaviour:
   correctAnswerAudio: {fileID: 8300000, guid: 64a2a5fd22d2e4e02aef992fb7111737, type: 3}
   wrongAnswerAudio: {fileID: 8300000, guid: 638616221a7c6467cb0fc9da4992201e, type: 3}
   QuestionAudio: {fileID: 8300000, guid: b560b4de1b0234794b669e0b4e0654a7, type: 3}
+  otherButton: {fileID: 8300000, guid: a0cef49fd600343acbb6f3de0f7b42a1, type: 3}
 --- !u!1 &1314381725
 GameObject:
   m_ObjectHideFlags: 0

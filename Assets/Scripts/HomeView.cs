@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using UniRx;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 public class HomeView : MonoBehaviour
 {
@@ -46,10 +47,14 @@ public class HomeView : MonoBehaviour
     [SerializeField] private Sprite hoverSprite;
     [SerializeField] private Sprite defaultSprite;
 
+    //
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip otherButton;
+
 
     void Start()
     {
-        startButton.onClick.AddListener(() => DOVirtual.DelayedCall(0.2f, () => SceneController.Instance.LoadSelectButton(1)));
+        startButton.onClick.AddListener(() => DOVirtual.DelayedCall(0.2f, () => SubmitButton(1).Forget()));
         SetQuestionTile();
         AttachButton();
         Load("quiz1");
@@ -100,18 +105,27 @@ public class HomeView : MonoBehaviour
     /// </summary>
     private void SetSelectView(int count,string filename)
     {
+        audioSource.PlayOneShot(otherButton);
         CommonValues.PlayerPrefsKeyCode = "INGAME" + count + "_" + QuestionCount.CurrentMaxCount;
         CommonValues.FileName = filename;
         CommonValues.InGameTitleText = hoge(count);
         //スタートボタンにアタッチされる内容を変更する
-        startButton.onClick.AddListener(() => DOVirtual.DelayedCall(0.2f, () => SceneController.Instance.LoadSelectButton(count)));
-        
+        startButton.onClick.AddListener(() => SubmitButton(count).Forget());
+
         //競走馬リストの読み込み
         Reset();
         Load(filename);
         Step();
     }
 
+    private async UniTaskVoid SubmitButton(int count)
+    {
+        //audioSource.PlayOneShot(otherButton);
+        await DOVirtual.DelayedCall(0.01f, () => audioSource.PlayOneShot(otherButton)).AsyncWaitForCompletion();
+        DOVirtual.DelayedCall(0.6f, () => SceneController.Instance.LoadSelectButton(count));
+    }
+
+   // todo
     string hoge(int count)
     {
         if (count == 1) { return QuestionTitle.InGame1; }
@@ -193,6 +207,7 @@ public class HomeView : MonoBehaviour
 
     private void SetQuestionCount10Button()
     {
+        audioSource.PlayOneShot(otherButton);
         questionCountButton[0].image.sprite = hoverSprite;
         questionCountButton[1].image.sprite = defaultSprite;
         questionCountButton[2].image.sprite = defaultSprite;
@@ -213,6 +228,7 @@ public class HomeView : MonoBehaviour
     }
     private void SetQuestionCount15Button()
     {
+        audioSource.PlayOneShot(otherButton);
         questionCountButton[1].image.sprite = hoverSprite;
         questionCountButton[0].image.sprite = defaultSprite;
         questionCountButton[2].image.sprite = defaultSprite;
@@ -232,6 +248,7 @@ public class HomeView : MonoBehaviour
 
     private void SetQuestionCount20Button()
     {
+        audioSource.PlayOneShot(otherButton);
         questionCountButton[2].image.sprite = hoverSprite;
         questionCountButton[0].image.sprite = defaultSprite;
         questionCountButton[1].image.sprite = defaultSprite;
@@ -251,6 +268,7 @@ public class HomeView : MonoBehaviour
     }
     private void SetQuestionCount50Button()
     {
+        audioSource.PlayOneShot(otherButton);
         questionCountButton[3].image.sprite = hoverSprite;
         questionCountButton[0].image.sprite = defaultSprite;
         questionCountButton[1].image.sprite = defaultSprite;
