@@ -71,7 +71,7 @@ public class InGameView : MonoBehaviour
     void Start()
     {
         StartSetting();
-
+        Debug.Log(CommonValues.PlayerPrefsKeyCode);
 
         this.UpdateAsObservable()
         .Subscribe(_ => {
@@ -164,7 +164,7 @@ public class InGameView : MonoBehaviour
             answerButtons[i].enabled = false;
             if (Equals(arrayChoices[i], currentAnswer))
             {
-                audioSource.PlayOneShot(correctAnswerAudio);
+                //audioSource.PlayOneShot(correctAnswerAudio);
                 answers[i].color = Color.green;
             }
             if (!Equals(arrayChoices[i], currentAnswer))
@@ -256,7 +256,6 @@ public class InGameView : MonoBehaviour
 
     public void ButtonChoices(int count,string choice,string answer)
     {
-        audioSource.PlayOneShot(correctAnswerAudio);
         iconFlag = true;
         isFlags = true;
         answerButtons[count].enabled = false;
@@ -273,7 +272,6 @@ public class InGameView : MonoBehaviour
             if (isFlag)
             {
                 correctAnswerCount += 1;
-                
                 if (correctAnswerCount > PlayerPrefs.GetInt(CommonValues.PlayerPrefsKeyCode))
                 {
                      PlayerPrefs.SetInt(CommonValues.PlayerPrefsKeyCode, correctAnswerCount);
@@ -285,7 +283,7 @@ public class InGameView : MonoBehaviour
 //            answersPopIcon[answerIcon].sprite = correctIcon;
             resultTitle.text = QuestionCount.CurrentMaxCount+"問中" + correctAnswerCount + "問正解！";
             winnerImage.DOScale(1f, 0.3f).SetEase(Ease.OutBounce);
-            //Debug.Log(choice + "と"+answer);
+            audioSource.PlayOneShot(correctAnswerAudio);
         }
         else if (!Equals(choice, answer))
         {
