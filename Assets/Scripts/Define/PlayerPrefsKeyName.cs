@@ -28,4 +28,16 @@ public class PlayerPrefsKeyName
     public const string InGame5score20 = "INGAME5_20";
     public const string InGame5score15 = "INGAME5_15";
     public const string InGame5score50 = "INGAME5_50";
+
+    public const string InGame6score = "INGAME6";
+    public const string InGame6score10 = "INGAME6_10";
+    public const string InGame6score20 = "INGAME6_20";
+    public const string InGame6score15 = "INGAME6_15";
+    public const string InGame6score50 = "INGAME6_50";
+
+    public const string InGame7score = "INGAME7";
+    public const string InGame7score10 = "INGAME7_10";
+    public const string InGame7score20 = "INGAME7_20";
+    public const string InGame7score15 = "INGAME7_15";
+    public const string InGame7score50 = "INGAME7_50";
 }

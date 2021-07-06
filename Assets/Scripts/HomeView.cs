@@ -20,10 +20,12 @@ public class HomeView : MonoBehaviour
     //InGameStartButton
     [SerializeField] private Button startButton;
 
+    private int dataNumber = 0;
+
     //todo:今後、お題を増やす場合はここも
     private List<string> list = new List<string>()
     { QuestionTitle.InGame1,QuestionTitle.InGame2,QuestionTitle.InGame3,
-      QuestionTitle.InGame4,QuestionTitle.InGame5
+      QuestionTitle.InGame4,QuestionTitle.InGame5,QuestionTitle.InGame6
     };
 
     //PlayerPrefsKeyとタイトル、ボタン押したときに下にポップされる内容を変更する引数を一つのデータ型
@@ -106,7 +108,9 @@ public class HomeView : MonoBehaviour
     private void SetSelectView(int count,string filename)
     {
         audioSource.PlayOneShot(otherButton);
+        dataNumber = count;
         CommonValues.PlayerPrefsKeyCode = "INGAME" + count + "_" + QuestionCount.CurrentMaxCount;
+        Debug.Log(CommonValues.PlayerPrefsKeyCode);
         CommonValues.FileName = filename;
         CommonValues.InGameTitleText = hoge(count);
         //スタートボタンにアタッチされる内容を変更する
@@ -120,9 +124,11 @@ public class HomeView : MonoBehaviour
 
     private async UniTaskVoid SubmitButton(int count)
     {
-        //audioSource.PlayOneShot(otherButton);
+        
+        //CommonValues.PlayerPrefsKeyCode = "INGAME" + count + "_" + QuestionCount.CurrentMaxCount;
         await DOVirtual.DelayedCall(0.01f, () => audioSource.PlayOneShot(otherButton)).AsyncWaitForCompletion();
-        DOVirtual.DelayedCall(0.6f, () => SceneController.Instance.LoadSelectButton(count));
+        DOVirtual.DelayedCall(0.6f, () => SceneController.Instance.LoadInGameScene());
+
     }
 
    // todo
@@ -133,6 +139,7 @@ public class HomeView : MonoBehaviour
         if (count == 3) { return QuestionTitle.InGame3; }
         if (count == 4) { return QuestionTitle.InGame4; }
         if (count == 5) { return QuestionTitle.InGame5; }
+        if (count == 6) { return QuestionTitle.InGame6; }
 
         return QuestionTitle.InGame1;
     }
@@ -185,7 +192,8 @@ public class HomeView : MonoBehaviour
 
             //Debug.Log(line);
         }
-        stageDatas = stagecsvdata.OrderBy(item => System.Guid.NewGuid()).ToArray();
+        //stageDatas = stagecsvdata.OrderBy(item => System.Guid.NewGuid()).ToArray();
+        stageDatas = stagecsvdata.ToArray();
     }
 
 
@@ -218,8 +226,8 @@ public class HomeView : MonoBehaviour
         questionCountButton[2].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
         questionCountButton[3].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
         QuestionCount.CurrentMaxCount = QuestionCount.Count10;
-
-        for(var i=0;i< questionElemnt.Length; i++)
+        CommonValues.PlayerPrefsKeyCode = "INGAME" + dataNumber + "_" + QuestionCount.CurrentMaxCount;
+        for (var i=0;i< questionElemnt.Length; i++)
         {
             //scoreとMax値の変更
             questionElemnt[i].ScoreText.text = PlayerPrefs.GetInt("INGAME"+(i+1)+"_10").ToString();
@@ -238,7 +246,7 @@ public class HomeView : MonoBehaviour
         questionCountButton[2].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
         questionCountButton[3].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
         QuestionCount.CurrentMaxCount = QuestionCount.Count15;
-
+        CommonValues.PlayerPrefsKeyCode = "INGAME" + dataNumber + "_" + QuestionCount.CurrentMaxCount;
         for (var i = 0; i < questionElemnt.Length; i++)
         {
             questionElemnt[i].ScoreText.text = PlayerPrefs.GetInt("INGAME" + (i + 1) + "_15").ToString();
@@ -260,6 +268,7 @@ public class HomeView : MonoBehaviour
         questionCountButton[3].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
 
         QuestionCount.CurrentMaxCount = QuestionCount.Count20;
+        CommonValues.PlayerPrefsKeyCode = "INGAME" + dataNumber + "_" + QuestionCount.CurrentMaxCount;
         for (var i = 0; i < questionElemnt.Length; i++)
         {
             questionElemnt[i].ScoreText.text = PlayerPrefs.GetInt("INGAME" + (i + 1) + "_20").ToString();
@@ -278,9 +287,9 @@ public class HomeView : MonoBehaviour
         questionCountButton[0].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
         questionCountButton[1].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
         questionCountButton[2].transform.GetChild(0).gameObject.GetComponent<Text>().color = Color.black;
-
-
         QuestionCount.CurrentMaxCount = QuestionCount.Count50;
+        Debug.Log(QuestionCount.CurrentMaxCount);
+        CommonValues.PlayerPrefsKeyCode = "INGAME" + dataNumber + "_" + QuestionCount.CurrentMaxCount;
         for (var i = 0; i < questionElemnt.Length; i++)
         {
             questionElemnt[i].ScoreText.text = PlayerPrefs.GetInt("INGAME" + (i + 1) + "_50").ToString();
