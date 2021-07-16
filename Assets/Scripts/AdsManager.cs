@@ -17,7 +17,7 @@ public class AdsManager : MonoBehaviour
     {
 #if UNITY_ANDROID
                 string gameID = androidID;
-                BANNER_PLACEMENT_ID = ""Banner_Android;
+                BANNER_PLACEMENT_ID = "Banner_Android";
 #else
         string gameID = iosID;
         BANNER_PLACEMENT_ID = "Banner_iOS";
